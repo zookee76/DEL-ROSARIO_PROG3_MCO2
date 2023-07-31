@@ -552,7 +552,6 @@ public class SpecialVendingMachine
         }
     }
 
-
     /**
      * Method to display the wallet of the vending machine.
      */
@@ -569,6 +568,7 @@ public class SpecialVendingMachine
 
         JOptionPane.showMessageDialog(null, vendingWalletInfo.toString(), "Vending Machine Wallet", JOptionPane.INFORMATION_MESSAGE);
     }
+
     /**
      * Method to replenish the money of the vending machine.
      * @param scanner is a scanner parameter passed to be able to use a scanner.
@@ -579,36 +579,34 @@ public class SpecialVendingMachine
 
         int chosenDenomination = 0;
 
+        String[] options = {"1 Peso", "5 Peso", "10 Peso"};
+
         while (true)
         {
-            String input = JOptionPane.showInputDialog(null, "What money denomination would you like to replenish? [1] 1 Peso [2] 5 Peso [3] 10 Peso:");
+            int denominationSelection = JOptionPane.showOptionDialog(null, "Select the denomination:", "Denomination Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
-            if (input == null) 
+            if (denominationSelection == JOptionPane.CLOSED_OPTION || denominationSelection == 3) 
             {
                 JOptionPane.showMessageDialog(null, "Operation canceled.");
                 break;
             }
-        
-            try 
-            {
-                chosenDenomination = Integer.parseInt(input);
 
-                if (chosenDenomination != 1 && chosenDenomination != 2 && chosenDenomination != 3) 
-                {
-                    JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a valid number.");
-                    continue;
-                } 
-                
-                else 
-                {
-                    break;
-                }
-            } 
-            
-            catch (NumberFormatException e) 
+            else if (denominationSelection == 0)
             {
-                JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a valid number.");
-                continue;
+                chosenDenomination = 1;
+                break;
+            }
+
+            else if (denominationSelection == 1)
+            {
+                chosenDenomination = 2;
+                break;
+            }
+
+            else if (denominationSelection == 2)
+            {
+                chosenDenomination = 3;
+                break;
             }
         }
 
@@ -749,7 +747,6 @@ public class SpecialVendingMachine
             startingInvText.append("Stocks: " + startingInventory[i].getItemStock() + "\n\n");
         }
     }
-
 
     /**
      * Method to display the current inventory of the vending machine.
@@ -1276,6 +1273,7 @@ public class SpecialVendingMachine
 
         int totalCost = 0;
         int pizzaType = -1;
+        int totalCalories = 0;
 
         while (true) 
         {
@@ -1315,42 +1313,19 @@ public class SpecialVendingMachine
 
         while (true) 
         {
-            int toppingChoice = -1;
             quantityTopping = 1;
+            String[] toppingOptions = {"Tomato Sauce", "Mozarella Cheese", "Ham", "Sausage", "Beef", "Onions", "Pineapple", "Anchovies", "Burrata", "Cancel Order"};
 
-            String toppingChoicee = JOptionPane.showInputDialog(null, "Enter the number of the toppings you want to include in your pizza or 0 to stop adding:");
+            int toppingChoicee = JOptionPane.showOptionDialog(null, "Select a topping to add to your pizza:", "Toppings Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, toppingOptions, toppingOptions[0]);
 
-            if (toppingChoicee == null)
+            if (toppingChoicee == JOptionPane.CLOSED_OPTION || toppingChoicee == toppingOptions.length - 1)
             {
-                JOptionPane.showMessageDialog(null, "Cancelled Order.");
+                JOptionPane.showMessageDialog(null, "Order canceled.");
                 cancelled = true;
                 break;
             }
 
-            try
-            {
-                toppingChoice = Integer.parseInt(toppingChoicee);
-
-                if (toppingChoice == 0) 
-                {
-                    JOptionPane.showMessageDialog(null, "Done with toppings!");
-                    break;
-                }
-
-                else if (toppingChoice < 1 || toppingChoice > 9) 
-                {
-                    JOptionPane.showMessageDialog(null, "Invalid topping choice!", "Invalid Choice", JOptionPane.ERROR_MESSAGE);
-                    continue;
-                }
-            }
-
-            catch (NumberFormatException e) 
-            {
-                JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a valid number.", "Invalid Choice", JOptionPane.ERROR_MESSAGE);
-                continue;
-            }
-
-            if (quantityTopping > toppings[toppingChoice - 1].getStock()) 
+            if (quantityTopping > toppings[toppingChoicee].getStock()) 
             {
                 JOptionPane.showMessageDialog(null, "Insufficient Stock!", "Insufficient Stock", JOptionPane.ERROR_MESSAGE);
                 continue;
@@ -1358,19 +1333,20 @@ public class SpecialVendingMachine
 
             else
             {
-                Toppings currentToppingChosen = toppings[toppingChoice - 1];
+                Toppings currentToppingChosen = toppings[toppingChoicee];
 
-                totalCost += toppings[toppingChoice - 1].getPrice() * quantityTopping;
+                totalCost += toppings[toppingChoicee].getPrice() * quantityTopping;
+                totalCalories += toppings[toppingChoicee].getToppingCalories() * quantityTopping;
                 
-                String prepMessage = "Preparing " + toppings[toppingChoice - 1].getName() + "...";
+                String prepMessage = "Preparing " + toppings[toppingChoicee].getName() + "...";
                 JOptionPane.showMessageDialog(null, prepMessage, "Preparing Topping", JOptionPane.INFORMATION_MESSAGE);
 
-                toppings[toppingChoice - 1].prep();
+                toppings[toppingChoicee].prep();
 
                 initialChosenToppings.add(currentToppingChosen);
                 chosenToppings.add(currentToppingChosen);
 
-                JOptionPane.showMessageDialog(null, "Added " + toppings[toppingChoice - 1].getName() + " to your order.\nTotal cost: Php " + totalCost);
+                JOptionPane.showMessageDialog(null, "Added " + toppings[toppingChoicee].getName() + " to your order.\nTotal cost: Php " + totalCost + "\n Total Calories: " + totalCalories);
             }
         }
         
@@ -1435,106 +1411,109 @@ public class SpecialVendingMachine
             }
         }
 
-        if (totalCost > amountReceived) 
+        if (cancelled == false)
         {
-            JOptionPane.showMessageDialog(null,"Insufficient amount received!");
-
-            toppings[pizzaType].increaseStock(quantityTopping);
-
-            for (int i = 0; i < initialChosenToppings.size(); i++) 
+            if (totalCost > amountReceived) 
             {
-                Toppings currentToppingChosen2 = initialChosenToppings.get(i);
-                
-                if (currentToppingChosen2.getName().equals(toppings[i].getName()))
+                JOptionPane.showMessageDialog(null,"Insufficient amount received!");
+
+                toppings[pizzaType].increaseStock(quantityTopping);
+
+                for (int i = 0; i < initialChosenToppings.size(); i++) 
                 {
-                    toppings[i].increaseStock(quantityTopping);
-                }
-                
-                for (int j = i + 1; j < initialChosenToppings.size(); j++) 
-                {
-                    Toppings otherTopping = initialChosenToppings.get(j);
-                    if (currentToppingChosen2.getName().equals(otherTopping.getName())) 
+                    Toppings currentToppingChosen2 = initialChosenToppings.get(i);
+                    
+                    if (currentToppingChosen2.getName().equals(toppings[i].getName()))
                     {
                         toppings[i].increaseStock(quantityTopping);
                     }
-                }
-            }
-
-            while (amountReceived != 0)
-            {
-                if (amountReceived >= 10)
-                {
-                    amountReceived = amountReceived - 10;
-                    user.setIndivUserWallet(2, 1);
-                    vendingWallet[2] = vendingWallet[2] - 1;
-                }
-
-                else if (amountReceived >= 5 && amountReceived < 10)
-                {
-                    amountReceived = amountReceived - 5;
-                    user.setIndivUserWallet(1, 1);
-                    vendingWallet[1] = vendingWallet[1] - 1;
-                }
-
-                else if (amountReceived >= 1 && amountReceived < 5)
-                {
-                    amountReceived = amountReceived - 1;
-                    user.setIndivUserWallet(0, 1);
-                    vendingWallet[0] = vendingWallet[0] - 1;
-                }
-            }
-        }
-
-        else 
-        {
-            int change = amountReceived - totalCost;
-            int[] changeDenominations = calculateChange(change);
-            StringBuilder changeMessage = new StringBuilder();
-
-            if (changeDenominations != null) 
-            {
-                changeMessage.append("\nDispensing Change....\n");
-
-                changeMessage.append("Change: Php ").append(change).append("\n\n");
-                changeMessage.append("Change denominations:\n");
-                changeMessage.append("1 Peso: ").append(changeDenominations[0]).append("\n");
-                changeMessage.append("5 Pesos: ").append(changeDenominations[1]).append("\n");
-                changeMessage.append("10 Pesos: ").append(changeDenominations[2]);
-
-                JOptionPane.showMessageDialog(null, changeMessage.toString(), "Change Dispenser", JOptionPane.INFORMATION_MESSAGE);
-
-                user.addCoinsToWallet(1, changeDenominations[0]);
-                user.addCoinsToWallet(5, changeDenominations[1]);
-                user.addCoinsToWallet(10, changeDenominations[2]);
-
-                user.displayUserWallet();
-
-                addToppingTransaction(chosenToppings);
-
-                for (int i = 0; i < chosenToppings.size(); i++) 
-                {
-                    Toppings currentTopping = chosenToppings.get(i);
-                
-                    for (int j = 0; j < toppings.length; j++) 
+                    
+                    for (int j = i + 1; j < initialChosenToppings.size(); j++) 
                     {
-                        if (currentTopping.getName().equals(toppings[j].getName())) 
+                        Toppings otherTopping = initialChosenToppings.get(j);
+                        if (currentToppingChosen2.getName().equals(otherTopping.getName())) 
                         {
-                            toppings[j].decreaseStock(1);                
+                            toppings[i].increaseStock(quantityTopping);
                         }
                     }
                 }
-                
-                toppings[pizzaType].decreaseStock(1);
 
-                if (addSpecialTransaction(pizzaType, chosenToppings, totalCost) == 0)
+                while (amountReceived != 0)
                 {
-                    ordered = true;
+                    if (amountReceived >= 10)
+                    {
+                        amountReceived = amountReceived - 10;
+                        user.setIndivUserWallet(2, 1);
+                        vendingWallet[2] = vendingWallet[2] - 1;
+                    }
+
+                    else if (amountReceived >= 5 && amountReceived < 10)
+                    {
+                        amountReceived = amountReceived - 5;
+                        user.setIndivUserWallet(1, 1);
+                        vendingWallet[1] = vendingWallet[1] - 1;
+                    }
+
+                    else if (amountReceived >= 1 && amountReceived < 5)
+                    {
+                        amountReceived = amountReceived - 1;
+                        user.setIndivUserWallet(0, 1);
+                        vendingWallet[0] = vendingWallet[0] - 1;
+                    }
                 }
             }
 
-            else
+            else 
             {
-                JOptionPane.showMessageDialog(null,"Not enough money to produce change.");
+                int change = amountReceived - totalCost;
+                int[] changeDenominations = calculateChange(change);
+                StringBuilder changeMessage = new StringBuilder();
+
+                if (changeDenominations != null) 
+                {
+                    changeMessage.append("\nDispensing Change....\n");
+
+                    changeMessage.append("Change: Php ").append(change).append("\n\n");
+                    changeMessage.append("Change denominations:\n");
+                    changeMessage.append("1 Peso: ").append(changeDenominations[0]).append("\n");
+                    changeMessage.append("5 Pesos: ").append(changeDenominations[1]).append("\n");
+                    changeMessage.append("10 Pesos: ").append(changeDenominations[2]);
+
+                    JOptionPane.showMessageDialog(null, changeMessage.toString(), "Change Dispenser", JOptionPane.INFORMATION_MESSAGE);
+
+                    user.addCoinsToWallet(1, changeDenominations[0]);
+                    user.addCoinsToWallet(5, changeDenominations[1]);
+                    user.addCoinsToWallet(10, changeDenominations[2]);
+
+                    user.displayUserWallet();
+
+                    addToppingTransaction(chosenToppings);
+
+                    for (int i = 0; i < chosenToppings.size(); i++) 
+                    {
+                        Toppings currentTopping = chosenToppings.get(i);
+                    
+                        for (int j = 0; j < toppings.length; j++) 
+                        {
+                            if (currentTopping.getName().equals(toppings[j].getName())) 
+                            {
+                                toppings[j].decreaseStock(1);                
+                            }
+                        }
+                    }
+                    
+                    toppings[pizzaType].decreaseStock(1);
+
+                    if (addSpecialTransaction(pizzaType, chosenToppings, totalCost) == 0)
+                    {
+                        ordered = true;
+                    }
+                }
+
+                else
+                {
+                    JOptionPane.showMessageDialog(null,"Not enough money to produce change.");
+                }
             }
         }
 

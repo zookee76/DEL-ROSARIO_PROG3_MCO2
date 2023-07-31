@@ -320,36 +320,34 @@ public class RegularVendingMachine
 
         int chosenDenomination = 0;
 
+        String[] options = {"1 Peso", "5 Peso", "10 Peso"};
+
         while (true)
         {
-            String input = JOptionPane.showInputDialog(null, "What money denomination would you like to replenish? [1] 1 Peso [2] 5 Peso [3] 10 Peso:");
+            int denominationSelection = JOptionPane.showOptionDialog(null, "Select the denomination:", "Denomination Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
-            if (input == null) 
+            if (denominationSelection == JOptionPane.CLOSED_OPTION || denominationSelection == 3) 
             {
                 JOptionPane.showMessageDialog(null, "Operation canceled.");
                 break;
             }
-        
-            try 
-            {
-                chosenDenomination = Integer.parseInt(input);
 
-                if (chosenDenomination != 1 && chosenDenomination != 2 && chosenDenomination != 3) 
-                {
-                    JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a valid number.");
-                    continue;
-                } 
-                
-                else 
-                {
-                    break;
-                }
-            } 
-            
-            catch (NumberFormatException e) 
+            else if (denominationSelection == 0)
             {
-                JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a valid number.");
-                continue;
+                chosenDenomination = 1;
+                break;
+            }
+
+            else if (denominationSelection == 1)
+            {
+                chosenDenomination = 2;
+                break;
+            }
+
+            else if (denominationSelection == 2)
+            {
+                chosenDenomination = 3;
+                break;
             }
         }
 
@@ -375,7 +373,6 @@ public class RegularVendingMachine
                         if (denominationCount < 1) 
                         {
                             JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a positive number.");
-                            continue;
                         } 
                         
                         else 
@@ -416,7 +413,6 @@ public class RegularVendingMachine
                         if (denominationCount < 1) 
                         {
                             JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a positive number.");
-                            continue;
                         } 
                         
                         else 
@@ -457,7 +453,6 @@ public class RegularVendingMachine
                         if (denominationCount < 1) 
                         {
                             JOptionPane.showMessageDialog(null, "Invalid Choice. Please enter a positive number.");
-                            continue;
                         } 
                         
                         else 
