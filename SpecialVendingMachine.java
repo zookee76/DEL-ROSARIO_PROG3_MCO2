@@ -579,11 +579,11 @@ public class SpecialVendingMachine
 
         int chosenDenomination = 0;
 
-        String[] options = {"1 Peso", "5 Peso", "10 Peso"};
+        String[] moneyoptions = {"1 Peso", "5 Peso", "10 Peso"};
 
         while (true)
         {
-            int denominationSelection = JOptionPane.showOptionDialog(null, "Select the denomination:", "Denomination Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            int denominationSelection = JOptionPane.showOptionDialog(null, "Select the denomination:", "Denomination Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, moneyoptions, moneyoptions[0]);
 
             if (denominationSelection == JOptionPane.CLOSED_OPTION || denominationSelection == 3) 
             {
@@ -876,7 +876,7 @@ public class SpecialVendingMachine
      */
     public void addTransaction(int index)
     {
-        Transaction transaction = new Transaction(itemssItems[index - 1].getItemName(), 1, itemssItems[index - 1].getItemPrice());
+        Transaction transaction = new Transaction(itemssItems[index].getItemName(), 1, itemssItems[index].getItemPrice());
 
         transactions.add(transaction);
     }
@@ -1065,27 +1065,61 @@ public class SpecialVendingMachine
         int amountReceived = 0;
         int numberOfDenomination = 0;
         boolean stopInserting = false;
+        int denomination = -1;
 
         while (true) 
         {
-            String denominationInput = JOptionPane.showInputDialog(null, "Enter the denomination you want to insert (1, 5, 10) or 0 to stop inserting:");
-            int denomination = Integer.parseInt(denominationInput);
+            String[] moneyoptions = {"1 Peso", "5 Peso", "10 Peso", "Done with Insertion"};
 
-            if (denomination == 0) 
+            while (true)
             {
-                stopInserting = true;
+                int denominationSelection = JOptionPane.showOptionDialog(null, "Select the denomination:", "Denomination Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, moneyoptions, moneyoptions[0]);
+
+                if (denominationSelection == JOptionPane.CLOSED_OPTION || denominationSelection == 4) 
+                {
+                    JOptionPane.showMessageDialog(null, "Operation canceled.");
+                    break;
+                }
+
+                else if (denominationSelection == 0)
+                {
+                    denomination = 1;
+                    break;
+                }
+
+                else if (denominationSelection == 1)
+                {
+                    denomination = 5;
+                    break;
+                }
+
+                else if (denominationSelection == 2)
+                {
+                    denomination = 10;
+                    break;
+                }
+
+                else if (denominationSelection == JOptionPane.CLOSED_OPTION) 
+                {
+                    JOptionPane.showMessageDialog(null, "Operation canceled.");
+                    break;
+                }
+
+                else 
+                {
+                    stopInserting = true;
+                    break;
+                }
+            }
+
+            if (stopInserting == true)
+            {
                 break;
-            } 
-            
-            else if (denomination != 1 && denomination != 5 && denomination != 10) {
-                JOptionPane.showMessageDialog(null, "Invalid denomination!");
-                continue;
             }
 
             while (true) 
             {
-                String numberOfDenominationInput = JOptionPane.showInputDialog(null,
-                        "Enter the number of " + denomination + " pesos:");
+                String numberOfDenominationInput = JOptionPane.showInputDialog(null, "Enter the number of " + denomination + " pesos:");
                 numberOfDenomination = Integer.parseInt(numberOfDenominationInput);
 
                 if (numberOfDenomination < 1) 
@@ -1124,7 +1158,7 @@ public class SpecialVendingMachine
             }
         }
 
-        if (stopInserting)
+        if (stopInserting == true)
         {
             if (index >= 0 && index <= itemssItems.length && itemssItems[index] != null) 
             {
