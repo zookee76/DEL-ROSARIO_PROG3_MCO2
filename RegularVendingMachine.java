@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Class of the Regular Vending Machine.
@@ -56,12 +57,34 @@ public class RegularVendingMachine
     }
 
     /**
-     * Method to display the items in GUI
+     * Method to display the items in GUI as well as decide which is the discounted item.
      * @param displayPanel is the panel the items are going to be displayed to.
      * @param itemsFrame is the frame the panel goes into.
+     * @param sourceMethod is the source that called the method.
      */
-    public void displayItemsGUI(JPanel displayPanel, JFrame itemsFrame) 
+    public void displayItemsGUI(JPanel displayPanel, JFrame itemsFrame, String sourceMethod) 
     {
+        for (int i = 0; i < itemssItems.length; i++)
+        {
+            itemssItems[i].resetToOriginalPrice();
+        }
+
+        if (!sourceMethod.equals("changePrices") && !sourceMethod.equals("restockItem"))
+        {
+            Random random = new Random();
+
+            int randomIndex = random.nextInt(itemssItems.length);
+            int maxRandomPrice = itemssItems[randomIndex].getItemPrice() - 1;
+            
+            int uniqueRandomPrice = random.nextInt(maxRandomPrice - 19) + 20;
+            itemssItems[randomIndex].setItemPrice(uniqueRandomPrice);
+
+            String randomPriceMsg = itemssItems[randomIndex].getItemName() + " is being sold at a special discounted price of " + itemssItems[randomIndex].getItemPrice() + "!\n\n";
+            JLabel randomPriceLabel = new JLabel(randomPriceMsg);
+
+            displayPanel.add(randomPriceLabel);
+        }
+
         for (int i = 0; i < itemssItems.length; i++) 
         {
             if (itemssItems[i] != null) 
@@ -253,6 +276,7 @@ public class RegularVendingMachine
         }
 
         int chPriceSelection = priceChange;
+        itemssItems[chPriceIndex].setOriginalPrice(chPriceSelection);
         itemssItems[chPriceIndex].setItemPrice(chPriceSelection);
 
         updateStocks(setPricePanel, labelsPanel);
