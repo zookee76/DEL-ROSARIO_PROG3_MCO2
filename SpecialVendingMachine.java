@@ -911,7 +911,7 @@ public class SpecialVendingMachine
      * Method which adds the toppings of the purchased pizza into an array list.
      * @param chosenToppings are the toppings of the pizza.
      */
-    public void addToppingTransaction(ArrayList<Toppings> chosenToppings)
+    public void addToppingTransaction(ArrayList<Toppings> chosenToppings, int pizzaType)
     {
         for (int i = 0; i < chosenToppings.size(); i++)
         {
@@ -921,6 +921,9 @@ public class SpecialVendingMachine
 
             toppingTransactions.add(toppingTransaction);
         }
+
+        ToppingTransaction toppingTransaction = new ToppingTransaction(toppings[pizzaType].getName(), 1, toppings[pizzaType].getPrice());
+        toppingTransactions.add(toppingTransaction);
     }
 
     /**
@@ -1374,7 +1377,7 @@ public class SpecialVendingMachine
         while (true) 
         {
             quantityTopping = 1;
-            String[] toppingOptions = {"Tomato Sauce", "Mozarella Cheese", "Ham", "Sausage", "Beef", "Onions", "Pineapple", "Anchovies", "Burrata", "Cancel Order"};
+            String[] toppingOptions = {"Tomato Sauce", "Mozarella Cheese", "Ham", "Sausage", "Beef", "Onions", "Pineapple", "Anchovies", "Burrata", "Done with Toppings", "Cancel Order"};
 
             int toppingChoicee = JOptionPane.showOptionDialog(null, "Select a topping to add to your pizza:", "Toppings Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, toppingOptions, toppingOptions[0]);
 
@@ -1382,6 +1385,12 @@ public class SpecialVendingMachine
             {
                 JOptionPane.showMessageDialog(null, "Order canceled.");
                 cancelled = true;
+                break;
+            }
+
+            else if (toppingChoicee == 9)
+            {
+                JOptionPane.showMessageDialog(null, "Done with toppings!");
                 break;
             }
 
@@ -1547,7 +1556,7 @@ public class SpecialVendingMachine
 
                     user.displayUserWallet();
 
-                    addToppingTransaction(chosenToppings);
+                    addToppingTransaction(chosenToppings, pizzaType);
 
                     for (int i = 0; i < chosenToppings.size(); i++) 
                     {
